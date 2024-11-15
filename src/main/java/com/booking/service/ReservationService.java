@@ -14,20 +14,14 @@ public interface ReservationService {
 
 
     ReservationResponseDto createReservation(ReservationRequestDto request, Authentication client);
+
     ReservationResponseDto checkoutReservation(Long reservationId, Authentication client);
+
     ReservationResponseDto cancelReservation(Long reservationId, Authentication client);
-    List<ReservationResponseDto> clientReservations(String clientId, Authentication authentication,ReservationState state, Pageable pageable);
+
+    List<ReservationResponseDto> clientReservations(String clientId, Authentication authentication, ReservationState state, Pageable pageable);
 
     List<ReservationResponseDto> findAllSortedByCheckInDESC(Pageable pageable);
-
-
-
-
-
-
-
-
-
 
 
     // complete reservation is by spring scheduler module

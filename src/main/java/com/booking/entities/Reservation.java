@@ -9,9 +9,10 @@ import java.util.List;
 @Entity
 public class Reservation {
 
-    public Reservation(){
-        state=ReservationState.PENDING;
+    public Reservation() {
+        state = ReservationState.PENDING;
     }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -29,7 +30,6 @@ public class Reservation {
     private LocalDate checkOutDate;
 
     private double totalPrice;
-
 
 
     public Payement getPayement() {

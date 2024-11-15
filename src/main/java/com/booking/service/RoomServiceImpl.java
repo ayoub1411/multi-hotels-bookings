@@ -25,36 +25,37 @@ import java.util.stream.Collectors;
 @Service
 public class RoomServiceImpl implements RoomService {
 
-RoomRepository roomRepository;
+    RoomRepository roomRepository;
 
-HotelRepository hotelRepository;
+    HotelRepository hotelRepository;
 
-RoomImageRepository roomImageRepository;
+    RoomImageRepository roomImageRepository;
 
-RoomSpecification roomSpecification;
+    RoomSpecification roomSpecification;
 
-HotelMapper mapper;
-FileStorageService storageService;
-public RoomServiceImpl(RoomRepository roomRepository,HotelRepository hotelRepository,HotelMapper mapper
-        ,RoomSpecification roomSpecification,RoomImageRepository roomImageRepository,FileStorageService storageService){
+    HotelMapper mapper;
+    FileStorageService storageService;
 
-    this.roomSpecification=roomSpecification;
-    this.roomRepository=roomRepository;
-    this.hotelRepository=hotelRepository;
-    this.mapper=mapper;
-    this.storageService=storageService;
-    this.roomImageRepository=roomImageRepository;
+    public RoomServiceImpl(RoomRepository roomRepository, HotelRepository hotelRepository, HotelMapper mapper
+            , RoomSpecification roomSpecification, RoomImageRepository roomImageRepository, FileStorageService storageService) {
 
-}
+        this.roomSpecification = roomSpecification;
+        this.roomRepository = roomRepository;
+        this.hotelRepository = hotelRepository;
+        this.mapper = mapper;
+        this.storageService = storageService;
+        this.roomImageRepository = roomImageRepository;
+
+    }
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public RoomDto save(RoomRequest request, Long hotelId, MultipartFile[] files) {
 
 
-        Hotel hotel=hotelRepository.findById(hotelId)
-                .orElseThrow(()->new EntityNotFoundException("Cannot find hotel with id "+hotelId));
-        Room room=new Room();
+        Hotel hotel = hotelRepository.findById(hotelId)
+                .orElseThrow(() -> new EntityNotFoundException("Cannot find hotel with id " + hotelId));
+        Room room = new Room();
 
         room.setNumberOfRooms(request.getNumberOfRooms());
         room.setPrice(request.getPrice());
@@ -62,13 +63,13 @@ public RoomServiceImpl(RoomRepository roomRepository,HotelRepository hotelReposi
         room.setHotel(hotel);
         roomRepository.save(room);
 
-        if(files!=null && files.length!=0){
+        if (files != null) {
 
-            for(MultipartFile image:files){
+            for (MultipartFile image : files) {
 
-               String imageName= storageService.saveRoomImage(image);
+                String imageName = storageService.saveRoomImage(image);
 
-                RoomImage roomImage=new RoomImage();
+                RoomImage roomImage = new RoomImage();
                 roomImage.setName(imageName);
 
                 roomImage.setRoom(room);
@@ -85,31 +86,30 @@ public RoomServiceImpl(RoomRepository roomRepository,HotelRepository hotelReposi
     }
 
     @Override
-    public List<RoomDto> roomsByHotelId(Long id,double min, double max,int numberOfRooms,Pageable pageable) {
-        Specification<Room>specification= Specification.where(null);
-        System.out.println(min+" "+max+" "+numberOfRooms);
+    public List<RoomDto> roomsByHotelId(Long id, double min, double max, int numberOfRooms, Pageable pageable) {
+        Specification<Room> specification = Specification.where(null);
+        System.out.println(min + " " + max + " " + numberOfRooms);
         //check if exist
         hotelRepository.findById(id)
-                .orElseThrow(()->new EntityNotFoundException("Hotel not found with id  "+id));
+                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with id  " + id));
 
-        specification=specification.and(roomSpecification.hotelId(id));
-        if(max>0)
-            specification=specification.and(roomSpecification.priceBetween(min,max));
-        if(numberOfRooms>0)
-            specification=specification.and(roomSpecification.numberOfRooms(numberOfRooms));
+        specification = specification.and(roomSpecification.hotelId(id));
+        if (max > 0)
+            specification = specification.and(roomSpecification.priceBetween(min, max));
+        if (numberOfRooms > 0)
+            specification = specification.and(roomSpecification.numberOfRooms(numberOfRooms));
 
 
-
-        return roomRepository.findAll(specification,pageable)
+        return roomRepository.findAll(specification, pageable)
                 .getContent().stream()
                 .map(mapper::fromRoom)
                 .toList();
     }
 
     @Override
-    public List<RoomDto> findAvailableRooms(Long hotelId, double minPrice, double maxPrice, LocalDate checkInDate, LocalDate checkOutDate,int numberOfRooms) {
+    public List<RoomDto> findAvailableRooms(Long hotelId, double minPrice, double maxPrice, LocalDate checkInDate, LocalDate checkOutDate, int numberOfRooms) {
         return roomRepository
-                .findAvailableRooms(hotelId,minPrice,maxPrice,checkInDate,checkOutDate,numberOfRooms)
+                .findAvailableRooms(hotelId, minPrice, maxPrice, checkInDate, checkOutDate, numberOfRooms)
                 .stream()
                 .map(mapper::fromRoom)
                 .collect(Collectors.toList());
@@ -119,32 +119,31 @@ public RoomServiceImpl(RoomRepository roomRepository,HotelRepository hotelReposi
     @Transactional(rollbackFor = {Exception.class})
     public RoomDto updateRoom(Long roomId, RoomRequest request, MultipartFile[] newImages) {
 
-    Room room=roomRepository.findById(roomId)
-            .orElseThrow(()->new EntityNotFoundException("Room not found with id : "+roomId));
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new EntityNotFoundException("Room not found with id : " + roomId));
 
-    if(request!=null){
-    room.setNumberOfRooms(request.getNumberOfRooms());
-    room.setSurface(request.getSurface());
-    room.setPrice(request.getPrice());}
-      System.out.println("size before adding new image"+room.getRoomImages().size());
-
-    if(newImages!=null && newImages.length>0)
-        for(MultipartFile file:newImages){
-
-            String imageName=storageService.saveRoomImage(file);
-            RoomImage roomImage=new RoomImage();
-            roomImage.setName(imageName);
-            roomImage.setRoom(room);
-            roomImageRepository.save(roomImage);
-
+        if (request != null) {
+            room.setNumberOfRooms(request.getNumberOfRooms());
+            room.setSurface(request.getSurface());
+            room.setPrice(request.getPrice());
         }
+        System.out.println("size before adding new image" + room.getRoomImages().size());
 
-        System.out.println("size after adding new image"+room.getRoomImages().size());
+        if (newImages != null)
+            for (MultipartFile file : newImages) {
+
+                String imageName = storageService.saveRoomImage(file);
+                RoomImage roomImage = new RoomImage();
+                roomImage.setName(imageName);
+                roomImage.setRoom(room);
+                roomImageRepository.save(roomImage);
+
+            }
+
+        System.out.println("size after adding new image" + room.getRoomImages().size());
 
 
-
-
-    return mapper.fromRoom(room);
+        return mapper.fromRoom(room);
 
 
     }
@@ -154,12 +153,12 @@ public RoomServiceImpl(RoomRepository roomRepository,HotelRepository hotelReposi
 
         return roomRepository.findById(id)
                 .map(mapper::fromRoom)
-                .orElseThrow(()->new EntityNotFoundException("Room not found with id : "+id));
+                .orElseThrow(() -> new EntityNotFoundException("Room not found with id : " + id));
     }
 
     @Override
     public void deleteRoom(Long id) {
-        roomRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Room with id "+id+" not exist for deleting"));
+        roomRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Room with id " + id + " not exist for deleting"));
 
         roomRepository.deleteById(id);
 

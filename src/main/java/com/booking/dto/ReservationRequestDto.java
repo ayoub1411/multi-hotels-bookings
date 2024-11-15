@@ -5,14 +5,9 @@ import java.time.LocalDate;
 public class ReservationRequestDto {
 
 
-
-
     private Long roomId;
     private LocalDate checkIn;
     private LocalDate checkOut;
-
-
-
 
 
     public Long getRoomId() {

@@ -2,7 +2,6 @@ package com.booking.security;
 
 import com.booking.dao.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,7 +18,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
 
         return userRepository.findAppUserByEmail(username)
-                .orElseThrow(()->new UsernameNotFoundException("Cannot find a user with email "+username));
+                .orElseThrow(() -> new UsernameNotFoundException("Cannot find a user with email " + username));
 
     }
 }

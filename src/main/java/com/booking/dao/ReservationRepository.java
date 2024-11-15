@@ -14,7 +14,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface ReservationRepository extends JpaRepository<Reservation,Long> {
+public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
 
     @Query("SELECT r FROM Reservation r  ORDER BY r.checkInDate DESC")
@@ -24,7 +24,7 @@ public interface ReservationRepository extends JpaRepository<Reservation,Long> {
     List<Reservation> findByRoomId(Long id);
 
     @Query("select r from Reservation r where r.client.id= :x ")
-    Page<Reservation> findReservationByClientId(@Param("x")String id, Pageable pageable);
+    Page<Reservation> findReservationByClientId(@Param("x") String id, Pageable pageable);
 
     public Page<Reservation> findAll(Specification<Reservation> specification, Pageable pageable);
 

@@ -1,43 +1,38 @@
 package com.booking.entities;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Entity
 public class Hotel {
-@Id@GeneratedValue(strategy = GenerationType.IDENTITY)
-Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
 
-@NotBlank(message = "Le nom ne doit pas etre vide")
-String name;
-
-@Max(value = 5,message = "Nombre d'etoiles d'hotel ne doit pas depasser 5")
-@Min(value = 1,message = "Nombre d'etoiles d'hotel ne doit pas etre inferieur a 1")
-int stars ;
-
-@NotBlank(message = "L'address ne doit pas etre vide")
-String address;
-@OneToMany(mappedBy = "hotel",cascade = CascadeType.REMOVE)
-
-List<Room> rooms ;
-
-@ManyToOne
-City city;
-
-String imageName;//chemain
-
-@Transient
-MultipartFile image;
+    String name;
 
 
-private int numberOfLike;
+    int stars;
+
+
+    String address;
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.REMOVE)
+
+    List<Room> rooms;
+
+    @ManyToOne
+    City city;
+
+    String imageName;//chemain
+
+    @Transient
+    MultipartFile image;
+
+
+    private int numberOfLike;
 
     public int getNumberOfLike() {
         return numberOfLike;

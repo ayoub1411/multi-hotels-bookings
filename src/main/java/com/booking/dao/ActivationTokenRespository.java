@@ -11,16 +11,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public interface ActivationTokenRespository  extends JpaRepository<ActivationToken,Long> {
+public interface ActivationTokenRespository extends JpaRepository<ActivationToken, Long> {
 
-public Optional<ActivationToken> findByToken(String token);
+    public Optional<ActivationToken> findByToken(String token);
 
 
-@Transactional
-@Modifying
-@Query("update ActivationToken token set token.validatedAt =:date where token.token= :token ")
+    @Transactional
+    @Modifying
+    @Query("update ActivationToken token set token.validatedAt =:date where token.token= :token ")
 
-public void updateConfirmationDate(@Param("token")String token, @Param("date") LocalDateTime date);
+    public void updateConfirmationDate(@Param("token") String token, @Param("date") LocalDateTime date);
 
 
 }

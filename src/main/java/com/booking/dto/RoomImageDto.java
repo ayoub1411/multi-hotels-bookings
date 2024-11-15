@@ -2,7 +2,7 @@ package com.booking.dto;
 
 public class RoomImageDto {
 
-
+    String name;
 
 
     public String getName() {
@@ -12,14 +12,6 @@ public class RoomImageDto {
     public void setName(String name) {
         this.name = name;
     }
-
-
-
-
-
-    String name;
-
-
 
 
 }

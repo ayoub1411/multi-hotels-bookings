@@ -30,8 +30,8 @@ public class RegistrationRequest {
     @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
 
-@NotNull(message = "You should provide your address")
-        @Valid
+    @NotNull(message = "You should provide your address")
+    @Valid
     AddressDto address;
 
     public AddressDto getAddress() {

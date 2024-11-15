@@ -6,8 +6,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Entity
 public class RoomImage {
 
-    @Id@GeneratedValue(strategy = GenerationType.IDENTITY)
-            Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
 
     String name;
 

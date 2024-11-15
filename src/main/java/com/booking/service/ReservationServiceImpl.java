@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ReservationServiceImpl implements ReservationService{
+public class ReservationServiceImpl implements ReservationService {
     UserRepository userRepository;
 
     RoomRepository roomRepository;
@@ -36,63 +36,64 @@ public class ReservationServiceImpl implements ReservationService{
 
     HotelMapper mapper;
 
-    public ReservationServiceImpl(UserRepository userRepository,RoomRepository roomRepository
-            ,ReservationRepository reservationRepository,PayementRepository payementRepository
-            ,HotelMapper mapper,ReservationSpecification reservationSpecification){
-        this.userRepository=userRepository;
-        this.roomRepository=roomRepository;
-        this.reservationRepository=reservationRepository;
-        this.payementRepository=payementRepository;
-        this.mapper=mapper;
-        this.reservationSpecification=reservationSpecification;
+    public ReservationServiceImpl(UserRepository userRepository, RoomRepository roomRepository
+            , ReservationRepository reservationRepository, PayementRepository payementRepository
+            , HotelMapper mapper, ReservationSpecification reservationSpecification) {
+        this.userRepository = userRepository;
+        this.roomRepository = roomRepository;
+        this.reservationRepository = reservationRepository;
+        this.payementRepository = payementRepository;
+        this.mapper = mapper;
+        this.reservationSpecification = reservationSpecification;
     }
 
-    private boolean availableForReserving(Long roomId, LocalDate in,LocalDate out){
+    private boolean availableForReserving(Long roomId, LocalDate in, LocalDate out) {
 
-        List<Reservation> reservations=reservationRepository.findByRoomId(roomId);
+        List<Reservation> reservations = reservationRepository.findByRoomId(roomId);
 
-        for(Reservation reservation:reservations){
+        for (Reservation reservation : reservations) {
 
-            if(out.isAfter(reservation.getCheckInDate())&&in.isBefore(reservation.getCheckOutDate()))
+            if (out.isAfter(reservation.getCheckInDate()) && in.isBefore(reservation.getCheckOutDate()))
                 return false;
 
         }
 
         return true;
     }
-    private  double totalPriceOfReservation(LocalDate in,LocalDate out,double pricePerNight){
+
+    private double totalPriceOfReservation(LocalDate in, LocalDate out, double pricePerNight) {
         long numberOfNights = ChronoUnit.DAYS.between(in, out);
 
-        return numberOfNights*pricePerNight;
+        return numberOfNights * pricePerNight;
 
     }
+
     @Override
     @Transactional
     public ReservationResponseDto createReservation(ReservationRequestDto request, Authentication client) {
-        Reservation reservation=new Reservation();
+        Reservation reservation = new Reservation();
 
         reservation.setClient((Client) client.getPrincipal());
 
         reservation.setCheckInDate(request.getCheckIn());
         reservation.setCheckOutDate(request.getCheckOut());
-        Room room=roomRepository.findById(request.getRoomId())
-                .orElseThrow(()->new EntityNotFoundException("Cannot find a room with id :"+request.getRoomId()));
+        Room room = roomRepository.findById(request.getRoomId())
+                .orElseThrow(() -> new EntityNotFoundException("Cannot find a room with id :" + request.getRoomId()));
 
 
-        if(availableForReserving(request.getRoomId(),request.getCheckIn(),request.getCheckOut()))
+        if (availableForReserving(request.getRoomId(), request.getCheckIn(), request.getCheckOut()))
 
             reservation.setRoom(room);
 
         else
 
-            throw new UnavailableRoomException("Sorry this room not available for booking in this period"+
-                    " from "+request.getCheckIn() +" to "+request.getCheckOut());
-
+            throw new UnavailableRoomException("Sorry this room not available for booking in this period" +
+                    " from " + request.getCheckIn() + " to " + request.getCheckOut());
 
 
         //at this point room is available
-        Payement payement=new Payement();
-        double totalPrice=totalPriceOfReservation(request.getCheckIn(),request.getCheckOut(),room.getPrice());
+        Payement payement = new Payement();
+        double totalPrice = totalPriceOfReservation(request.getCheckIn(), request.getCheckOut(), room.getPrice());
         payement.setAmount(totalPrice);
 
         payement.setPayed(false);
@@ -103,17 +104,16 @@ public class ReservationServiceImpl implements ReservationService{
         return mapper.fromReservation(reservation);
 
 
-
     }
 
     @Override
     @Transactional
     public ReservationResponseDto checkoutReservation(Long reservationId, Authentication client) {
 
-        Reservation reservation=reservationRepository.findById(reservationId)
-                .orElseThrow(()->new RuntimeException("Reservation not exist to confirm"));
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new RuntimeException("Reservation not exist to confirm"));
 
-        if(!reservation.getClient().getEmail().equals(((Client)client.getPrincipal()).getEmail() )){
+        if (!reservation.getClient().getEmail().equals(((Client) client.getPrincipal()).getEmail())) {
             throw new RuntimeException("cannot confirm a reservation that you do not own ");
 
         }
@@ -129,10 +129,10 @@ public class ReservationServiceImpl implements ReservationService{
     @Transactional
     public ReservationResponseDto cancelReservation(Long reservationId, Authentication client) {
 
-        Reservation reservation=reservationRepository.findById(reservationId)
-                .orElseThrow(()->new RuntimeException("Reservation not exist to confirm"));
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new RuntimeException("Reservation not exist to confirm"));
 
-        if(reservation.getState().equals(ReservationState.COMPLETED))
+        if (reservation.getState().equals(ReservationState.COMPLETED))
             throw new RuntimeException("Cannot cancel a COMLETED reservation");
 
 
@@ -147,27 +147,23 @@ public class ReservationServiceImpl implements ReservationService{
     }
 
 
-
-
     @Override
     public List<ReservationResponseDto> clientReservations(String clientId, Authentication connectedUser, ReservationState state, Pageable pageable) {
 
 
+        Specification<Reservation> specification = Specification.where(null);
+        specification = specification.and(reservationSpecification.clientId(clientId));
+        if (state != null)
+            specification = specification.and(reservationSpecification.state(state));
 
 
-        Specification<Reservation> specification= Specification.where(null);
-        specification=specification.and(reservationSpecification.clientId(clientId));
-        if(state!=null)
-            specification=specification.and(reservationSpecification.state(state));
+        AppUser user = (AppUser) connectedUser.getPrincipal();
+
+        if (!(user instanceof Admin) && !user.getId().equals(clientId))
+            throw new RuntimeException("As  a client you cannot view reservation of client with id" + clientId);
 
 
-        AppUser user=(AppUser) connectedUser.getPrincipal();
-
-        if(! (user instanceof Admin) && !user.getId().equals(clientId))
-                throw new RuntimeException("As  a client you cannot view reservation of client with id"+clientId);
-
-
-        Page<Reservation> page=reservationRepository.findAll(specification,pageable);
+        Page<Reservation> page = reservationRepository.findAll(specification, pageable);
 
 
         return page.getContent().stream()
@@ -182,7 +178,6 @@ public class ReservationServiceImpl implements ReservationService{
                 .getContent().stream().map(mapper::fromReservation).collect(Collectors.toList());
 
     }
-
 
 
 }

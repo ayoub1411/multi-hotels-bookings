@@ -10,15 +10,14 @@ import java.util.Set;
 @Entity
 public class Client extends AppUser {
 
-    public Client(){
+    public Client() {
         this.setAuthorities(Set.of(Authorities.CLIENT.toString()));
 
     }
 
 
-
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "client")
-
+    
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 
     List<Reservation> reservations;
 
@@ -33,7 +32,6 @@ public class Client extends AppUser {
     List<Hotel> favorites;
 
 
-
     public List<Hotel> getFavorites() {
         return favorites;
     }
@@ -43,7 +41,6 @@ public class Client extends AppUser {
     }
 
 
-
     public List<Reservation> getReservations() {
         return reservations;
     }
@@ -51,8 +48,6 @@ public class Client extends AppUser {
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
     }
-
-
 
 
 }

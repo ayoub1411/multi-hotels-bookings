@@ -3,8 +3,8 @@ package com.booking.dto;
 public class FavoriteResponseDto {
 
 
-   private Long id;
-   private String email ;
+    private Long id;
+    private String email;
 
     public Long getId() {
         return id;

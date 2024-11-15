@@ -13,7 +13,17 @@ import java.util.stream.Collectors;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public   class AppUser implements UserDetails {
+public class AppUser implements UserDetails {
+
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
+    String imageName;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID) //UUID
@@ -88,13 +98,10 @@ public   class AppUser implements UserDetails {
     private String lastname;
     private LocalDate dateOfBirth;
     private String password;
-    @Column(name = "email",unique = true)
+    @Column(name = "email", unique = true)
     private String email;
 
-private boolean enabled;
-
-
-
+    private boolean enabled;
 
 
     transient Set<String> authorities;//not persistant injected in creation depending on instance type(client or admin)
@@ -108,18 +115,15 @@ private boolean enabled;
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
 
-        return  authorities
-                .stream()
-                .map((authority)->new GrantedAuthority() {
-                    @Override
-                    public String getAuthority() {
-                        return authority;
+        return authorities.stream().map((authority) -> new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return authority;
 
-                    }
-                }).collect(Collectors.toList());
+            }
+        }).collect(Collectors.toList());
 
     }
-
 
 
     public void setPassword(String password) {
@@ -127,13 +131,10 @@ private boolean enabled;
     }
 
 
-
     @Override
     public String getPassword() {
         return this.password;
     }
-
-
 
 
     @Override

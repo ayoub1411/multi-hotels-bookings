@@ -29,53 +29,54 @@ public class JwtService {
     private int accesTokenDelay;
 
 
-
-    public String buildAccesToken(UserDetails userDetails){
-        return  buildToken(userDetails,accesTokenDelay);
-    }
-   public String buildRefreshToken(UserDetails userDetails){
-
-        return buildToken(userDetails,refreshTokenDelay);
+    public String buildAccesToken(UserDetails userDetails) {
+        return buildToken(userDetails, accesTokenDelay);
     }
 
+    public String buildRefreshToken(UserDetails userDetails) {
+
+        return buildToken(userDetails, refreshTokenDelay);
+    }
 
 
-public <T> T extractClaim(String token,Function<Claims,T> mapper){
+    public <T> T extractClaim(String token, Function<Claims, T> mapper) {
 
 
         return mapper.apply(extractAllClaims(token));
 
-}
-public Date exractExpiration(String token){
+    }
+
+    public Date exractExpiration(String token) {
 
 
+        return extractClaim(token, Claims::getExpiration);
 
-        return extractClaim(token,Claims::getExpiration);
+    }
 
-}
-public String subject(String token){
-
-
-        return extractClaim(token,Claims::getSubject);
-
-}
-
-public boolean isValidAndNoExpierd(UserDetails user,String token){
-
-        return user.getUsername().equals(getSubject(token))&&getExpiredAt(token).after(new Date());
-
-}
-   public String getSubject(String token){
-
-        return extractClaim(token,Claims::getSubject);
-
-   }
+    public String subject(String token) {
 
 
-   public Date getExpiredAt(String token){
+        return extractClaim(token, Claims::getSubject);
+
+    }
+
+    public boolean isValidAndNoExpierd(UserDetails user, String token) {
+
+        return user.getUsername().equals(getSubject(token)) && getExpiredAt(token).after(new Date());
+
+    }
+
+    public String getSubject(String token) {
+
+        return extractClaim(token, Claims::getSubject);
+
+    }
+
+
+    public Date getExpiredAt(String token) {
 
         return extractAllClaims(token).getExpiration();
-   }
+    }
 
 
     private Claims extractAllClaims(String token) {
@@ -85,20 +86,14 @@ public boolean isValidAndNoExpierd(UserDetails user,String token){
     }
 
 
-  private String buildToken(UserDetails userDetails,int time){
+    private String buildToken(UserDetails userDetails, int time) {
 
-        Map<String,Object> extraClaims=new HashMap();
+        Map<String, Object> extraClaims = new HashMap();
 
-        extraClaims.put("authorities",userDetails.getAuthorities());
+        extraClaims.put("authorities", userDetails.getAuthorities());
 
 
-
-        return  Jwts.builder().setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+time*60*1000L))
-                .signWith(this.getSignInKey(), SignatureAlgorithm.HS256)
-                .compact();
+        return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername()).setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis() + time * 60 * 1000L)).signWith(this.getSignInKey(), SignatureAlgorithm.HS256).compact();
 
     }
 
@@ -108,7 +103,6 @@ public boolean isValidAndNoExpierd(UserDetails user,String token){
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
 
 
 }

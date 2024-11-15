@@ -17,50 +17,49 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 @RequestMapping("/reservations")
 public class ReservationController {
-@Autowired
-ReservationService reservationService;
+    @Autowired
+    ReservationService reservationService;
 
     @PostMapping
-    public ReservationResponseDto createReservation(@RequestBody ReservationRequestDto request, Authentication authentication){
+    public ReservationResponseDto createReservation(@RequestBody ReservationRequestDto request, Authentication authentication) {
 
-        return reservationService.createReservation(request,authentication);
+        return reservationService.createReservation(request, authentication);
 
 
     }
 
     @GetMapping("/confirm/{id}")
-    public ReservationResponseDto confirm(@PathVariable("id")Long id,Authentication authentication){
-        return reservationService.checkoutReservation(id,authentication);
+    public ReservationResponseDto confirm(@PathVariable("id") Long id, Authentication authentication) {
+        return reservationService.checkoutReservation(id, authentication);
     }
 
     @GetMapping("/cancel/{id}")
-    public ReservationResponseDto cancel(@PathVariable("id") Long id,Authentication authentication){
+    public ReservationResponseDto cancel(@PathVariable("id") Long id, Authentication authentication) {
 
-        return reservationService.cancelReservation(id,authentication);
+        return reservationService.cancelReservation(id, authentication);
 
     }
 
 
     @GetMapping("/client/{id}")
-  ResponseEntity< List<ReservationResponseDto> >reservations(@PathVariable("id")String clientId
-            , @RequestParam(value = "state",required = false)ReservationState state
-            , @RequestParam(value = "page",defaultValue = "0") int page
-            ,@RequestParam(value = "items",defaultValue = "4")int items
-            ,Authentication authentication){
-        return ResponseEntity.ok(reservationService.clientReservations(clientId,authentication,state,PageRequest.of(page,items)))
+    ResponseEntity<List<ReservationResponseDto>> reservations(@PathVariable("id") String clientId
+            , @RequestParam(value = "state", required = false) ReservationState state
+            , @RequestParam(value = "page", defaultValue = "0") int page
+            , @RequestParam(value = "items", defaultValue = "4") int items
+            , Authentication authentication) {
+        return ResponseEntity.ok(reservationService.clientReservations(clientId, authentication, state, PageRequest.of(page, items)))
                 ;
 
     }
+
     @GetMapping("/admin/history")
-    List<ReservationResponseDto> find( @RequestParam(value = "page",defaultValue = "0") int page
-            ,@RequestParam(value = "items",defaultValue = "4")int items){
+    List<ReservationResponseDto> find(@RequestParam(value = "page", defaultValue = "0") int page
+            , @RequestParam(value = "items", defaultValue = "4") int items) {
 
-        return reservationService.findAllSortedByCheckInDESC(PageRequest.of(page,items));
-
+        return reservationService.findAllSortedByCheckInDESC(PageRequest.of(page, items));
 
 
     }
-
 
 
 }

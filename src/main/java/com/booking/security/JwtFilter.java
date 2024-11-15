@@ -20,6 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -30,10 +31,12 @@ public class JwtFilter extends OncePerRequestFilter {
     JwtService jwtService;
     @Autowired
     UserDetailsService userDetailsService;
-    private boolean isAuthenticationRequired(HttpServletRequest request){
 
-        return !request.getServletPath().contains("/auth")
-                && SecurityContextHolder.getContext().getAuthentication()==null;
+    private boolean isAuthenticationRequired(HttpServletRequest request) {
+
+        return
+                request.getServletPath().contains("/auth/upload") || !request.getServletPath().contains("/auth")
+                        && SecurityContextHolder.getContext().getAuthentication() == null;
 
     }
 
@@ -42,9 +45,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
         System.out.println("filter jwt ...");
 
-        String authHeader=request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
 
-        if(authHeader==null || !authHeader.startsWith("Bearer ") ||!isAuthenticationRequired(request)) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ") || !isAuthenticationRequired(request)) {
             filterChain.doFilter(request, response);
 
             System.out.println("No Auth needed ");
@@ -62,52 +65,36 @@ public class JwtFilter extends OncePerRequestFilter {
 
             String username = jwtService.getSubject(token);
 
-            UserDetails userDetails =userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             if (userDetails == null) throw new UserNotFoundException("User not found with email : " + username);
 
 
-            if(jwtService.isValidAndNoExpierd(userDetails,token)){
+            if (jwtService.isValidAndNoExpierd(userDetails, token)) {
 
 
                 //authenticate user
 
-                Authentication authentication=new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+                Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 System.out.println("user is authenticated");
 
 
-
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             //for handling any kind of exception with @ControllerAdvice
-            System.out.println("exception in jwt filter : "+e.getMessage());
-            resolver.resolveException(request,response,null,e);
+            System.out.println("exception in jwt filter : " + e.getMessage());
+            resolver.resolveException(request, response, null, e);
             return;
         }
 
 
-        filterChain.doFilter(request,response);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        filterChain.doFilter(request, response);
 
 
     }
-
 
 
 }

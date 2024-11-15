@@ -7,11 +7,13 @@ import java.util.List;
 
 @Entity
 public class City {
-    public City(){
+    public City() {
 
     }
-    public City(String name){
-        this.name=name;}
+
+    public City(String name) {
+        this.name = name;
+    }
 
     public Long getId() {
         return id;
@@ -33,7 +35,7 @@ public class City {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    String name ;
+    String name;
 
     public List<Hotel> getHotels() {
         return hotels;
@@ -43,7 +45,7 @@ public class City {
         this.hotels = hotels;
     }
 
-    @OneToMany(mappedBy = "city",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "city", fetch = FetchType.LAZY)
 
     List<Hotel> hotels;
 }

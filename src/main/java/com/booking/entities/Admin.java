@@ -7,9 +7,9 @@ import java.util.Set;
 
 @Entity
 
-public class Admin extends AppUser{
+public class Admin extends AppUser {
 
-    public Admin(){
+    public Admin() {
 
         this.setAuthorities(Set.of(
                 Authorities.CLIENT.toString(),

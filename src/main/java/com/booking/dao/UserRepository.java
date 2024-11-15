@@ -10,17 +10,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<AppUser,String> {
+public interface UserRepository extends JpaRepository<AppUser, String> {
 
 
-public Optional<AppUser> findAppUserByEmail(String email);
+    public Optional<AppUser> findAppUserByEmail(String email);
 
 
-@Modifying
-@Transactional
-@Query("update AppUser user set user.enabled=true where user.email= :email ")
-public void enableUser(@Param("email") String email);
-
+    @Modifying
+    @Transactional
+    @Query("update AppUser user set user.enabled=true where user.email= :email ")
+    public void enableUser(@Param("email") String email);
 
 
 }

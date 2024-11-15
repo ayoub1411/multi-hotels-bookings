@@ -5,7 +5,8 @@ import jakarta.persistence.*;
 @Entity
 public class Payement {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     double amount;

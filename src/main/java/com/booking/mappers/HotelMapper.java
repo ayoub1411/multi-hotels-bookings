@@ -6,6 +6,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import com.booking.entities.*;
 import com.booking.dto.*;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,71 +15,72 @@ public class HotelMapper {
 
 
     FileStorageService storageService;
-    public HotelMapper(FileStorageService service){
-        storageService=service;
+
+    public HotelMapper(FileStorageService service) {
+        storageService = service;
     }
-    public CityDto fromCity(City city){
+
+    public CityDto fromCity(City city) {
 
 
-CityDto dto=new CityDto();
+        CityDto dto = new CityDto();
 
 
-        BeanUtils.copyProperties(city,dto);
-
+        BeanUtils.copyProperties(city, dto);
 
 
         return dto;
     }
 
 
-    public City fromCityDto(CityDto dto){
-        City c=new City();
-        BeanUtils.copyProperties(dto,c);
+    public City fromCityDto(CityDto dto) {
+        City c = new City();
+        BeanUtils.copyProperties(dto, c);
         return c;
 
     }
 
-    public Hotel fromHotelRequest(HotelRequestDto dto){
+    public Hotel fromHotelRequest(HotelRequestDto dto) {
 
-        Hotel hotel=new Hotel();
+        Hotel hotel = new Hotel();
         hotel.setAddress(dto.getAddress());
         hotel.setName(dto.getName());
 
         hotel.setStars(dto.getStars());
 
-        return  hotel;
+        return hotel;
     }
 
 
-    public Address fromAddresDto(AddressDto dto){
+    public Address fromAddresDto(AddressDto dto) {
 
-        Address address=new Address();
+        Address address = new Address();
         address.setAdresse1(dto.getAdresse1());
         address.setAdresse2(dto.getAdresse2());
         address.setPays(address.getPays());
         address.setCodePostale(dto.getCodePostale());
         return address;
     }
-    public HotelDto fromHotel(Hotel hotel){
 
-        HotelDto dto=new HotelDto();
+    public HotelDto fromHotel(Hotel hotel) {
 
-        BeanUtils.copyProperties(hotel,dto);
+        HotelDto dto = new HotelDto();
+
+        BeanUtils.copyProperties(hotel, dto);
 
         dto.setCity(this.fromCity(hotel.getCity()));
 
 
-
-        return  dto;
+        return dto;
 
 
     }
 
-    public Hotel fromHotelDto(HotelDto hotelDto){
+    public Hotel fromHotelDto(HotelDto hotelDto) {
 
-        Hotel hotel=new Hotel();
+        Hotel hotel = new Hotel();
 
-        BeanUtils.copyProperties(hotelDto,hotel);
+        BeanUtils.copyProperties(hotelDto, hotel);
 
         hotel.setCity(this.fromCityDto(hotelDto.getCity()));
 
@@ -86,22 +88,23 @@ CityDto dto=new CityDto();
         return hotel;
     }
 
-    RoomImageDto fromRoomImage(RoomImage room){
+    RoomImageDto fromRoomImage(RoomImage room) {
 
-        RoomImageDto roomImageDto =new RoomImageDto();
-        BeanUtils.copyProperties(room,roomImageDto);
+        RoomImageDto roomImageDto = new RoomImageDto();
+        BeanUtils.copyProperties(room, roomImageDto);
 
         return roomImageDto;
     }
-    public RoomDto fromRoom(Room room){
 
-        RoomDto roomDto =new RoomDto();
-        BeanUtils.copyProperties(room,roomDto);
+    public RoomDto fromRoom(Room room) {
+
+        RoomDto roomDto = new RoomDto();
+        BeanUtils.copyProperties(room, roomDto);
 
         roomDto.setHotelDto(this.fromHotel(room.getHotel()));
         List<RoomImageDto> rooms;
 
-        if(room.getRoomImages()!=null) {
+        if (room.getRoomImages() != null) {
             rooms = room.getRoomImages().stream()
                     .map(this::fromRoomImage).collect(Collectors.toList());
 
@@ -110,8 +113,8 @@ CityDto dto=new CityDto();
         return roomDto;
     }
 
-    public AddressDto fromAddress(Address address){
-        AddressDto dto=new AddressDto();
+    public AddressDto fromAddress(Address address) {
+        AddressDto dto = new AddressDto();
         dto.setAdresse1(address.getAdresse1());
         dto.setAdresse2(address.getAdresse2());
         dto.setPays(address.getPays());
@@ -120,20 +123,25 @@ CityDto dto=new CityDto();
 
         return dto;
     }
-    public ClientResponse fromAppUser(AppUser user){
-        ClientResponse clientResponse=new ClientResponse();
+
+    public ClientResponse fromAppUser(AppUser user) {
+        ClientResponse clientResponse = new ClientResponse();
         clientResponse.setAddress(this.fromAddress(user.getAddress()));
         clientResponse.setEmail(user.getEmail());
         clientResponse.setLastname(user.getLastname());
         clientResponse.setFirstname(user.getFirstname());
         clientResponse.setPhoneNumber(user.getPhoneNumber());
         clientResponse.setDateOfBirth(user.getDateOfBirth());
+        clientResponse.setActive(user.isEnabled());
+        clientResponse.setImage(user.getImageName());
+
 
         return clientResponse;
     }
-    public ReservationResponseDto fromReservation(Reservation reservation){
 
-        ReservationResponseDto reservationResponseDto=new ReservationResponseDto();
+    public ReservationResponseDto fromReservation(Reservation reservation) {
+
+        ReservationResponseDto reservationResponseDto = new ReservationResponseDto();
 
         reservationResponseDto.setId(reservation.getId());
         reservationResponseDto.setCheckInDate(reservation.getCheckInDate());
@@ -146,7 +154,7 @@ CityDto dto=new CityDto();
         reservationResponseDto.setClient(this.fromAppUser(reservation.getClient()));
 
 
-        RoomDto roomDto=this.fromRoom(reservation.getRoom());
+        RoomDto roomDto = this.fromRoom(reservation.getRoom());
 
         reservationResponseDto.setRoom(roomDto);
 
@@ -155,4 +163,4 @@ CityDto dto=new CityDto();
     }
 
 
-        }
+}

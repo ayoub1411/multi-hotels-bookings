@@ -1,6 +1,5 @@
 package com.booking.storage;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -23,12 +22,19 @@ public class FileStorageService {
     @Value("${rooms.images.path}")
     String roomFolder;
 
+    @Value("${users.images.path}")
+    String profileFolder;
+
     public String saveHotelImage(MultipartFile image) {
         return saveImage(image, hotelFolder);
     }
 
     public String saveRoomImage(MultipartFile image) {
         return saveImage(image, roomFolder);
+    }
+
+    public String saveProfileImage(MultipartFile image) {
+        return saveImage(image, profileFolder);
     }
 
     private String saveImage(MultipartFile image, String directoryPath) {
@@ -58,36 +64,38 @@ public class FileStorageService {
     }
 
 
-
-    public byte[] getHotelImage(String imageName){
-        return getImage(imageName,hotelFolder);
+    public byte[] getHotelImage(String imageName) {
+        return getImage(imageName, hotelFolder);
     }
 
-    public byte[] getRoomlImage(String imageName){
-        return getImage(imageName,roomFolder);
+    public byte[] getRoomlImage(String imageName) {
+        return getImage(imageName, roomFolder);
     }
-    byte[] getImage(String imageName,String folder){
-        Path path=null;
-        try{
+
+    public byte[] getProfilelImage(String imageName) {
+        return getImage(imageName, profileFolder);
+    }
+
+    byte[] getImage(String imageName, String folder) {
+        Path path = null;
+        try {
 
 
-            path= Paths.get(folder,imageName);
+            path = Paths.get(folder, imageName);
 
-            Resource resource=new UrlResource(path.toUri());
-
-
-
-            return resource.exists() && resource.isReadable()? Files.readAllBytes(path):null;
+            Resource resource = new UrlResource(path.toUri());
 
 
-        }catch (Exception e){
+            return resource.exists() && resource.isReadable() ? Files.readAllBytes(path) : null;
+
+
+        } catch (Exception e) {
 
 
         }
         return null;
 
     }
-
 
 
 }

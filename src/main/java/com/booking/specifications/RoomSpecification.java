@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class RoomSpecification {
 
 
-   public Specification<Room> priceBetween(double min,double max){
+    public Specification<Room> priceBetween(double min, double max) {
 
         return new Specification<Room>() {
 
@@ -21,7 +21,7 @@ public class RoomSpecification {
             public Predicate toPredicate(Root<Room> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
 
 
-                return  criteriaBuilder.between(root.get("price"),min,max);
+                return criteriaBuilder.between(root.get("price"), min, max);
 
             }
         };
@@ -29,14 +29,14 @@ public class RoomSpecification {
 
     }
 
-    public Specification<Room> hotelId(Long id){
+    public Specification<Room> hotelId(Long id) {
 
-        return (root,query,builder)-> builder.equal(root.get("hotel").get("id"),id);
+        return (root, query, builder) -> builder.equal(root.get("hotel").get("id"), id);
     }
 
-    public Specification<Room> numberOfRooms(int numberOfRooms){
+    public Specification<Room> numberOfRooms(int numberOfRooms) {
 
-        return (root,query,builder)-> builder.equal(root.get("numberOfRooms"),numberOfRooms);
+        return (root, query, builder) -> builder.equal(root.get("numberOfRooms"), numberOfRooms);
 
 
     }

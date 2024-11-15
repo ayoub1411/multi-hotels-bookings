@@ -11,20 +11,19 @@ public class Room {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id ;
+    Long id;
 
     double price;
 
-    double surface ;
-
+    double surface;
 
 
     int numberOfRooms;
 
-    @OneToMany(mappedBy = "room",fetch = FetchType.EAGER,cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "room", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
 
 
-  List<RoomImage> roomImages;
+    List<RoomImage> roomImages;
 
     public RoomState getRoomState() {
         return roomState;
@@ -47,7 +46,7 @@ public class Room {
     @ManyToOne
     Hotel hotel;
 
-    @OneToMany(mappedBy = "room",fetch =FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     List<Reservation> reservations;
 
     public Hotel getHotel() {

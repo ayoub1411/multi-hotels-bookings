@@ -8,9 +8,6 @@ import jakarta.persistence.*;
 public class Address {
 
 
-
-
-
     @Column(name = "adresse1")
     private String adresse1;
 
